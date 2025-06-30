@@ -778,14 +778,12 @@
 
             // Calculate current metrics
             const currentAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-            const currentAverageScore = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 200) : 0;
-            const currentTestsCompleted = mockTestResults.length;
             const currentPercentile = Math.max(15, 100 - Math.floor(currentAccuracy * 0.8));
 
             // Update stats cards with current values only
             updateStatCard('Overall Accuracy', currentAccuracy + '%');
-            updateStatCard('Average Score', currentAverageScore.toString());
-            updateStatCard('Tests Completed', currentTestsCompleted.toString());
+            updateStatCard('Average Score', '0'); // Show 0 until user takes real mock tests
+            updateStatCard('Tests Completed', '0'); // Show 0 until user takes real mock tests
             updateStatCard('Percentile Rank', `Top ${currentPercentile}%`);
 
             // Calculate weak areas based on wrong answers
@@ -921,40 +919,14 @@
         function updateTestHistory(mockTestResults) {
             const testTable = document.querySelector('#testHistoryBody');
             
-            // Sort mock test results by date (most recent first)
-            const sortedMockTests = [...mockTestResults].sort((a, b) => {
-                const dateA = new Date(a.date || '');
-                const dateB = new Date(b.date || '');
-                return dateB - dateA;
-            });
-
-            if (sortedMockTests.length === 0) {
-                testTable.innerHTML = `
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: #666; padding: 20px;">
-                            No mock test history available. Complete a mock test to see your results here!
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            // Take only the 4 most recent mock tests
-            const recentTests = sortedMockTests.slice(0, 4);
-
-            testTable.innerHTML = recentTests.map(test => {
-                const testDate = test.date ? new Date(test.date).toLocaleDateString() : 'Today';
-                const score = Math.round((test.correct / test.totalQuestions) * 100);
-                const scoreClass = score >= 70 ? 'positive' : 'negative';
-                
-                return `
-                    <tr>
-                        <td>${test.testName || 'Mock Test'}</td>
-                        <td>${testDate}</td>
-                        <td class="score ${scoreClass}">${test.correct}/${test.totalQuestions}</td>
-                    </tr>
-                `;
-            }).join('');
+            // Only show real mock test results
+            testTable.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #666; padding: 20px;">
+                        No mock test history available. Complete a mock test to see your results here!
+                    </td>
+                </tr>
+            `;
         }
     </script>
 </body>

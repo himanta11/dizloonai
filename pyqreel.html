@@ -643,6 +643,50 @@
             }
         }
         
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 100%;
+                margin: 0 auto;
+                min-height: 100vh;
+            }
+
+            .header {
+                padding: 20px 40px;
+            }
+
+            .quiz-reel {
+                padding: 20px 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: calc(100vh - 80px); /* Account for header height */
+            }
+
+            .quiz-card {
+                width: 440px;  /* Match mobile width */
+                margin: 10px auto;
+                min-height: calc(100vh - 120px); /* Ensure minimum height */
+                height: auto; /* Allow content to determine height */
+                max-height: calc(100vh - 120px); /* Maximum height constraint */
+            }
+
+            /* Keep other card properties unchanged */
+            .question, .options, .card-header {
+                width: 100%;
+            }
+
+            /* Ensure proper spacing for content */
+            .options {
+                flex: 1;
+                min-height: 200px; /* Minimum height for options */
+            }
+
+            .question {
+                min-height: 80px; /* Minimum height for question */
+            }
+        }
+
         /* Add loader styles */
         .loader {
             --background: linear-gradient(135deg, #23C4F8, #275EFE);
@@ -855,11 +899,11 @@
         <div class="filter-section">
             <h3 class="filter-title">Choose Subjects</h3>
             <div class="filter-options">
-                <div class="filter-option selected" data-subject="General Awareness">General Awareness</div>
-                <div class="filter-option" data-subject="Reasoning">General Intelligence and Reasoning</div>
-                <div class="filter-option" data-subject="Mathematics">Mathematics</div>
-                <div class="filter-option" data-subject="General Science">General Science</div>
-                <div class="filter-option" data-subject="English Grammar">English Grammar</div>
+                <div class="filter-option selected">General Awareness</div>
+                <div class="filter-option">General Intelligence and Reasoning</div>
+                <div class="filter-option">Mathematics</div>
+                <div class="filter-option">General Science</div>
+                <div class="filter-option">English Grammar</div>
             </div>
         </div>
         
@@ -868,7 +912,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="config.js"></script>
-    <script src="auth-utils.js"></script>
     <script>
         class QuizManager {
             constructor() {
@@ -885,7 +928,9 @@
                     dailyUsage: 0,
                     maxSessions: 2,
                     questionsPerSession: 10,
-                    selectedSubject: 'General Awareness' // Set default subject
+                    questionsScrolled: 0,  // New state for tracking scrolled questions
+                    totalAnswers: 0,       // New state for tracking total answers
+                    correctAnswers: 0      // New state for tracking correct answers
                 };
 
                 // DOM elements
@@ -1049,8 +1094,21 @@
                     console.log('Initializing quiz...');
                     this.resetState();
                     
-                    // Always load fresh questions
+                    // Setup scroll tracking
+                    this.setupScrollTracking();
+                    
+                    // Select General Awareness by default
+                    const filterOptions = document.querySelectorAll('.filter-option');
+                    filterOptions.forEach(option => {
+                        if (option.textContent === 'General Awareness') {
+                            option.classList.add('selected');
+                        } else {
+                            option.classList.remove('selected');
+                        }
+                    });
+                    
                     await this.loadInitialQuestions();
+                    
                 } catch (error) {
                     console.error('Error in initialization:', error);
                     this.handleError('Failed to initialize quiz. Please try again later.');
@@ -1123,13 +1181,21 @@
                     
                     // Get selected subjects from filters
                     const selectedSubjects = Array.from(document.querySelectorAll('.filter-option.selected'))
-                        .map(option => option.dataset.subject);
+                        .map(option => option.textContent.trim());
 
                     console.log('Selected subjects:', selectedSubjects);
 
-                    // Always use General Awareness by default if no subject is selected
+                    // Map the subject name to match the API's expected format
+                    const subjectMapping = {
+                        'General Awareness': 'General Awareness',
+                        'General Intelligence and Reasoning': 'Reasoning',
+                        'Mathematics': 'Mathematics',
+                        'General Science': 'General Science',
+                        'English Grammar': 'English Grammar'
+                    };
+
                     const selectedSubject = selectedSubjects[0] || 'General Awareness';
-                    const mappedSubject = selectedSubject;
+                    const mappedSubject = subjectMapping[selectedSubject] || selectedSubject;
 
                     console.log('Selected subject:', selectedSubject);
                     console.log('Mapped subject:', mappedSubject);
@@ -1251,11 +1317,17 @@
                 try {
                     const newQuestions = await this.fetchQuestions();
                     if (newQuestions.length > 0) {
-                        this.state.currentQuestions = [...this.state.currentQuestions, ...newQuestions];
-                        newQuestions.forEach((q, i) => {
-                            this.createCard(q, this.state.currentQuestions.length - newQuestions.length + i);
-                        });
-                        this.state.answeredQuestions = 0;
+                        // Filter out any questions that are already in currentQuestions
+                        const existingIds = new Set(this.state.currentQuestions.map(q => q.id));
+                        const uniqueNewQuestions = newQuestions.filter(q => !existingIds.has(q.id));
+                        
+                        if (uniqueNewQuestions.length > 0) {
+                            this.state.currentQuestions = [...this.state.currentQuestions, ...uniqueNewQuestions];
+                            uniqueNewQuestions.forEach((q, i) => {
+                                this.createCard(q, this.state.currentQuestions.length - uniqueNewQuestions.length + i);
+                            });
+                            this.state.answeredQuestions = 0;
+                        }
                     }
                 } catch (error) {
                     console.error('Error loading more questions:', error);
@@ -1305,13 +1377,6 @@
 
                 const selectedIndex = parseInt(selectedOption.dataset.index);
                 const isCorrect = selectedIndex === questionData.answer;
-
-                // Only track the question and answer when it's actually answered
-                if (window.statsManager && !card.dataset.counted) {
-                    card.dataset.counted = 'true';
-                    window.statsManager.incrementQuestionsScrolled('pyqreel');
-                    window.statsManager.recordAnswer(isCorrect, 'pyqreel');
-                }
 
                 // Track performance data
                 this.trackPerformanceData(questionData, isCorrect, selectedIndex, questionData.answer);
@@ -1423,13 +1488,16 @@
                 if (isCorrect) {
                     this.state.score++;
                     this.state.streak++;
+                    this.state.correctAnswers++;  // Track correct answers
                 } else {
                     this.state.streak = 0;
                 }
                 this.state.answeredQuestions++;
+                this.state.totalAnswers++;  // Track total answers
                 this.updateUsage();
                 this.updateUI();
                 this.saveState();
+                this.updatePyqReelStats();  // Update stats in localStorage
             }
 
             showAnswerFeedback(card, questionData, selectedOption, isCorrect) {
@@ -1602,7 +1670,7 @@
                             <span>Loading</span>
                         </div>
                     `;
-
+                    
                     this.resetState();
                     await this.loadInitialQuestions();
                     document.getElementById('filtersPanel').classList.remove('active');
@@ -1719,6 +1787,54 @@
                 ];
             }
 
+            updatePyqReelStats() {
+                // Get existing stats
+                const stats = JSON.parse(localStorage.getItem('pyqreelStats') || '{}');
+                
+                // Update stats
+                stats.questionsScrolled = (stats.questionsScrolled || 0) + 1;
+                stats.correctAnswers = this.state.correctAnswers;
+                stats.totalAnswers = this.state.totalAnswers;
+                stats.lastActiveDate = new Date().toDateString();
+                
+                // Calculate accuracy
+                const accuracy = stats.totalAnswers > 0 ? Math.round((stats.correctAnswers / stats.totalAnswers) * 100) : 0;
+                stats.accuracy = accuracy;
+                
+                // Save back to localStorage
+                localStorage.setItem('pyqreelStats', JSON.stringify(stats));
+
+                // Update performance data in localStorage
+                const performanceData = JSON.parse(localStorage.getItem('userPerformance') || '{}');
+                performanceData.totalQuestions = stats.totalAnswers;
+                performanceData.totalCorrect = stats.correctAnswers;
+                performanceData.accuracy = accuracy;
+                localStorage.setItem('userPerformance', JSON.stringify(performanceData));
+            }
+
+            setupScrollTracking() {
+                const quizReel = this.elements.quizReel;
+                let lastScrollPosition = 0;
+                let scrollTimeout;
+
+                quizReel.addEventListener('scroll', () => {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        const currentPosition = quizReel.scrollTop;
+                        const cardHeight = quizReel.querySelector('.quiz-card')?.offsetHeight || 0;
+                        
+                        if (cardHeight > 0) {
+                            const scrolledCards = Math.floor(Math.abs(currentPosition - lastScrollPosition) / cardHeight);
+                            if (scrolledCards > 0) {
+                                this.state.questionsScrolled += scrolledCards;
+                                this.updatePyqReelStats();
+                            }
+                        }
+                        lastScrollPosition = currentPosition;
+                    }, 150);
+                });
+            }
+
             setupSwipeListeners(card, questionData) {
                 let startX = 0;
                 let isSwiping = false;
@@ -1792,7 +1908,10 @@
                     streak: this.state.streak,
                     answeredQuestions: this.state.answeredQuestions,
                     lastMilestone: this.state.lastMilestone,
-                    currentQuestions: this.state.currentQuestions
+                    currentQuestions: this.state.currentQuestions,
+                    questionsScrolled: this.state.questionsScrolled,
+                    totalAnswers: this.state.totalAnswers,
+                    correctAnswers: this.state.correctAnswers
                 }));
             }
         }
@@ -1832,51 +1951,8 @@
 
         // Initialize the quiz when the DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            // Clear any cached quiz state
-            sessionStorage.removeItem('quizState');
-            sessionStorage.removeItem('quizScrollPosition');
-            
-            // Ensure General Awareness is selected by default
-            const filterOptions = document.querySelectorAll('.filter-option');
-            filterOptions.forEach(option => {
-                if (option.textContent.trim() === 'General Awareness') {
-                    option.classList.add('selected');
-                } else {
-                    option.classList.remove('selected');
-                }
-            });
-            
             new QuizManager();
         });
-
-        // Add tracking for viewed questions
-        function handleQuestionView(questionElement) {
-            if (!questionElement.dataset.counted) {
-                questionElement.dataset.counted = 'true';
-                statsManager.incrementQuestionsScrolled();
-                statsManager.updateStreak();
-            }
-        }
-
-        function handleAnswer(isCorrect) {
-            statsManager.recordAnswer(isCorrect);
-        }
-
-        // Add to the swipe handler
-        function handleSwipe(direction) {
-            const currentQuestion = document.querySelector('.question-card.active');
-            if (currentQuestion) {
-                handleQuestionView(currentQuestion);
-            }
-            // ... rest of swipe handling code ...
-        }
-
-        // Add to the answer selection handler
-        function selectAnswer(optionElement, correctAnswer, selectedAnswer) {
-            const isCorrect = selectedAnswer === correctAnswer;
-            handleAnswer(isCorrect);
-            // ... rest of answer selection code ...
-        }
     </script>
 </body>
 </html>

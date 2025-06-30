@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms & Conditions - ExamAI</title>
+    <title>Terms & Conditions - Dizloon</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Gasket+One:wght@400;700&family=League+Spartan:wght@700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon/aspirant.png">
     <style>
@@ -26,10 +26,27 @@
         }
         
         body {
-            background-color: var(--dark);
-            color: var(--light);
+            background: #000000;
+            color: var(--dark);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 192, 203, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(230, 230, 250, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(173, 216, 230, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 60%, rgba(176, 224, 230, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
         }
         
         .container {
@@ -45,50 +62,89 @@
             width: 100%;
             top: 0;
             z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(12px);
-            background-color: rgba(255, 255, 255, 0.7);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(45, 45, 58, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         nav {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
+            gap: 40px;
+            width: 100%;
+            padding: 0 30px;
+            height: 70px;
         }
-        
-        .logo-tab {
-            background-color: var(--blue);
-            border-radius: 20px;
-            padding: 10px 25px;
-            display: inline-block;
-        }
-        
-        .logo-tab span {
-            font-family: 'Gasket One', sans-serif;
-            color: var(--yellow);
-            font-size: 24px;
-            text-transform: lowercase;
+
+        .header-brand {
+            font-family: 'League Spartan', sans-serif;
             font-weight: 700;
+            font-size: 2.8rem;
+            background: linear-gradient(
+                45deg,
+                #FF0080 0%,
+                #FF3D9A 20%,
+                #7928CA 40%,
+                #0070F3 60%,
+                #00DFD8 80%,
+                #FF0080 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.03em;
+            text-transform: lowercase;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            background-size: 200% auto;
+            animation: gradient 3s linear infinite;
+            filter: brightness(1.5) contrast(1.2);
+            text-shadow: 
+                0 0 20px rgba(255, 0, 128, 0.5),
+                0 0 40px rgba(255, 0, 128, 0.3);
+            transform: translateY(-2px);
+            position: relative;
+            mix-blend-mode: lighten;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* Terms Content */
         .terms-content {
             padding: 120px 0 60px;
+            color: var(--dark);
         }
 
         .terms-header {
             text-align: center;
             margin-bottom: 60px;
-            background: linear-gradient(135deg, var(--purple), var(--blue));
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 223, 216, 0.1));
             padding: 60px 20px;
             border-radius: 20px;
-            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
         }
 
         .terms-header h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
+            background: linear-gradient(
+                45deg,
+                #FF0080 0%,
+                #7928CA 30%,
+                #0070F3 60%,
+                #00DFD8 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
         }
 
         .terms-header p {
@@ -96,29 +152,43 @@
             opacity: 0.9;
             max-width: 800px;
             margin: 0 auto;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .policy-section {
-            background: var(--glass);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 30px;
-            border: 1px solid rgba(45, 45, 58, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            animation: fadeInUp 0.8s forwards;
+            opacity: 0;
         }
 
         .policy-section:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(94, 23, 235, 0.1);
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .policy-section h2 {
-            color: var(--purple);
+            background: linear-gradient(
+                45deg,
+                #FF0080 0%,
+                #7928CA 50%,
+                #0070F3 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             font-size: 1.8rem;
             margin-bottom: 20px;
             position: relative;
             padding-bottom: 10px;
+            display: inline-block;
         }
 
         .policy-section h2::after {
@@ -128,19 +198,20 @@
             left: 0;
             width: 60px;
             height: 3px;
-            background: var(--pink);
+            background: linear-gradient(90deg, #FF0080, #00DFD8);
             border-radius: 3px;
         }
 
         .policy-section p {
             margin-bottom: 15px;
             line-height: 1.6;
-            color: var(--light);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .policy-section ul {
             margin: 20px 0;
             padding-left: 20px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .policy-section li {
@@ -152,16 +223,28 @@
             text-align: center;
             margin-top: 40px;
             padding: 20px;
-            color: var(--light);
-            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Footer Section */
         footer {
-            background: linear-gradient(135deg, var(--purple), var(--blue));
+            background: #000000;
             color: var(--dark);
             padding: 80px 0 30px;
-            margin-top: 60px;
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .footer-container {
@@ -186,14 +269,27 @@
         .social-links a {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
+            padding: 5px 0;
+            display: inline-block;
+            position: relative;
+            background: linear-gradient(
+                to right,
+                rgba(255, 0, 128, 0.7),
+                rgba(0, 223, 216, 0.7)
+            );
+            background-size: 200% 1px;
+            background-position: 100% 100%;
+            background-repeat: no-repeat;
         }
 
         .footer-links a:hover,
         .policy-links a:hover,
         .social-links a:hover {
-            color: white;
+            color: rgba(255, 255, 255, 1);
             transform: translateX(5px);
+            background-position: 0% 100%;
         }
 
         /* Responsive Design */
@@ -216,15 +312,22 @@
                 text-align: center;
                 gap: 40px;
             }
+            
+            nav {
+                padding: 0 15px;
+            }
+            
+            .header-brand {
+                font-size: 2.2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <header style="display: flex; align-items: center; gap: 12px; padding: 18px 0 10px 0;">
-      <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
-        <img src="favicon/aspirant.png" alt="Aspirant Logo" style="height: 44px; width: 44px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); background: #fff;">
-        <span style="font-size: 2em; font-weight: 700; color: #333; margin-left: 14px; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,0.12);">Aspirant</span>
-      </a>
+    <header>
+        <nav>
+            <a href="/" class="header-brand">dizloon</a>
+        </nav>
     </header>
 
     <!-- Terms & Conditions Content -->
@@ -232,18 +335,18 @@
         <div class="container">
             <div class="terms-header">
                 <h1>Terms & Conditions</h1>
-                <p>Welcome to ASPIRANT AI. Please read these terms and conditions carefully before using our platform. By accessing or using our services, you agree to be bound by these terms.</p>
+                <p>Welcome to Dizloon. Please read these terms and conditions carefully before using our platform. By accessing or using our services, you agree to be bound by these terms.</p>
             </div>
 
             <div class="policy-section">
                 <h2>Acceptance of Terms</h2>
-                <p>By accessing and using ASPIRANT AI, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                <p>By accessing and using Dizloon, you accept and agree to be bound by the terms and provision of this agreement.</p>
                 <p>If you do not agree to abide by these terms, you are not authorized to use or access the website and services.</p>
             </div>
 
             <div class="policy-section">
                 <h2>Use License</h2>
-                <p>Permission is granted to temporarily download one copy of the materials on ASPIRANT AI for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+                <p>Permission is granted to temporarily download one copy of the materials on Dizloon for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
                 <ul>
                     <li>Modify or copy the materials</li>
                     <li>Use the materials for any commercial purpose or for any public display</li>
@@ -290,7 +393,7 @@
 
             <div class="policy-section">
                 <h2>Disclaimer</h2>
-                <p>The information on this website is provided on an "as is" basis. To the fullest extent permitted by law, ASPIRANT AI:</p>
+                <p>The information on this website is provided on an "as is" basis. To the fullest extent permitted by law, Dizloon:</p>
                 <ul>
                     <li>Excludes all representations and warranties relating to this website and its contents</li>
                     <li>Does not guarantee the accuracy, completeness, or timeliness of the information</li>
@@ -300,19 +403,19 @@
 
             <div class="policy-section">
                 <h2>Limitation of Liability</h2>
-                <p>In no event shall ASPIRANT AI, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, punitive, consequential, or similar damages, including but not limited to loss of profits, data, use, goodwill, or other intangible losses.</p>
+                <p>In no event shall Dizloon, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, punitive, consequential, or similar damages, including but not limited to loss of profits, data, use, goodwill, or other intangible losses.</p>
             </div>
 
             <div class="policy-section">
                 <h2>Governing Law</h2>
-                <p>These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which ASPIRANT AI operates, and you irrevocably submit to the exclusive jurisdiction of the courts in that state or location.</p>
+                <p>These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which Dizloon operates, and you irrevocably submit to the exclusive jurisdiction of the courts in that state or location.</p>
             </div>
 
             <div class="policy-section">
                 <h2>Contact Information</h2>
                 <p>If you have any questions about these Terms & Conditions, please contact us:</p>
                 <ul>
-                    <li>Email: legal@aspirant.com</li>
+                    <li>Email: legal@dizloon.com</li>
                     <li>Phone: +1 (555) 123-4567</li>
                     <li>Address: 123 Learning Street, Education City, 12345</li>
                 </ul>

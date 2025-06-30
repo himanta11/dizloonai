@@ -696,11 +696,12 @@
         
         .new-course {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding: 12px;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px;
             border-radius: 12px;
             transition: all 0.3s ease;
+            align-items: center;
         }
         
         .new-course:hover {
@@ -709,21 +710,29 @@
         }
         
         .course-thumbnail {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
+            border-radius: 10px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
+        }
+        
+        .course-details {
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
         
         .course-details h4 {
-            margin-bottom: 5px;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            margin: 0;
+            line-height: 1.2;
         }
         
         .course-details p {
@@ -866,30 +875,7 @@
             box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
         }
         
-        .ai-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .ai-attach-btn {
-            padding: 8px 15px;
-            border-radius: 20px;
-            background-color: var(--primary-light);
-            color: var(--primary);
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .ai-attach-btn:hover {
-            background-color: var(--primary);
-            color: white;
-        }
+
         
         .section-title {
             font-size: 22px;
@@ -1311,7 +1297,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-fire"></i>
                                 </div>
-                                <div class="stat-text">
+                                <div class="stat-text" style="width: 100%">
                                     <div class="stat-value" id="streakDays">0</div>
                                     <div class="stat-label">Day Streak</div>
                                 </div>
@@ -1343,22 +1329,28 @@
                     <div class="card-title">New Launches</div>
                     <i class="fas fa-ellipsis-h"></i>
                 </div>
-                <div class="new-course">
+                <div class="new-course" onclick="navigateToPYQ('rrb', 'ntpc')">
                     <div class="course-thumbnail">
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <div class="course-details">
-                        <h4>RRB NTPC FULL COURSE</h4>
-                        <p>Starting from 5 June</p>
+                        <h4>RRB NTPC PYQ'S</h4>
                     </div>
                 </div>
-                <div class="new-course">
+                <div class="new-course" onclick="navigateToPYQ('ssc', 'cgl')">
                     <div class="course-thumbnail">
                         <i class="fas fa-landmark"></i>
                     </div>
                     <div class="course-details">
-                        <h4>SSC CGL FULL COURSE</h4>
-                        <p>Starting from 10 June</p>
+                        <h4>SSC CGL PYQ'S</h4>
+                    </div>
+                </div>
+                <div class="new-course" onclick="navigateToPYQ('rrb', 'group_d')">
+                    <div class="course-thumbnail">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <div class="course-details">
+                        <h4>RRB GROUP D PYQ'S</h4>
                     </div>
                 </div>
             </div>
@@ -1369,24 +1361,22 @@
                     <div class="card-title">Upcoming Mock Tests</div>
                     <i class="fas fa-ellipsis-h"></i>
                 </div>
-                <div class="upcoming-test">
+                <div class="upcoming-test" onclick="window.location.href='mocktest.html';" style="cursor: pointer;">
                     <div class="test-date">
-                        <div class="day">15</div>
-                        <div class="month">JUN</div>
+                        <div class="day">3</div>
+                        <div class="month">JUL</div>
                     </div>
                     <div class="test-info">
-                        <h4>RRB NTPC CBT 1</h4>
-                        <p>9:00 AM - 90 minutes</p>
+                        <h4>RRB GROUP D</h4>
                     </div>
                 </div>
-                <div class="upcoming-test">
+                <div class="upcoming-test" onclick="window.location.href='mocktest.html';" style="cursor: pointer;">
                     <div class="test-date">
-                        <div class="day">20</div>
-                        <div class="month">JUN</div>
+                        <div class="day">3</div>
+                        <div class="month">JUL</div>
                     </div>
                     <div class="test-info">
                         <h4>SSC CGL Tier 1</h4>
-                        <p>10:30 AM - 60 minutes</p>
                     </div>
                 </div>
             </div>
@@ -1417,13 +1407,7 @@
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-                <div class="ai-actions">
-                    <label class="ai-attach-btn">
-                        <i class="fas fa-paperclip"></i>
-                        <span>Attach File</span>
-                        <input type="file" id="fileUpload" style="display: none;" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
-                    </label>
-                </div>
+
             </div>
         </div>
     </div>
@@ -1450,11 +1434,11 @@
                     accuracy.innerHTML = `${stats.accuracy || 0}%`;
                 }
                 
-                // Update Streak
-                const streakDays = document.getElementById('streakDays');
-                if (streakDays) {
-                    streakDays.innerHTML = stats.streak || '0';
-                }
+                                    // Update Streak
+                    const streakDays = document.getElementById('streakDays');
+                    if (streakDays) {
+                        streakDays.innerHTML = stats.streak ? stats.streak.toString().padStart(2, '0') : '00';
+                    }
 
                 // Update streak in the welcome banner if visible
                 const streakCount = document.getElementById('streakCount');
@@ -1650,9 +1634,6 @@
         // Function to navigate to aitalk.html
         function navigateToAskDoubt(type = '') {
             const message = document.querySelector('.ai-input').value;
-            const fileInput = document.getElementById('fileUpload');
-            const file = fileInput.files[0];
-            
             let url = `aitalk.html?type=${type}`;
             
             if (message.trim()) {
@@ -1660,29 +1641,9 @@
                 url += `&message=${encodedMessage}`;
             }
             
-            if (file) {
-                // Store file in localStorage temporarily
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const fileData = {
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        data: e.target.result,
-                        timestamp: new Date().toISOString()
-                    };
-                    localStorage.setItem('tempFileData', JSON.stringify(fileData));
-                    // Clear the input field and file
-                    document.querySelector('.ai-input').value = '';
-                    fileInput.value = '';
-                    window.location.href = url;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                // Clear the input field
-                document.querySelector('.ai-input').value = '';
-                window.location.href = url;
-            }
+            // Clear the input field
+            document.querySelector('.ai-input').value = '';
+            window.location.href = url;
         }
         
         // Tab switching functionality
@@ -1710,17 +1671,7 @@
         
         window.addEventListener('scroll', animateOnScroll);
         
-        // File upload handling
-        const fileUpload = document.getElementById('fileUpload');
-        fileUpload.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Show file name in the input field
-                const aiInput = document.querySelector('.ai-input');
-                const fileSize = (file.size / (1024 * 1024)).toFixed(1);
-                aiInput.value = `Attached file: ${file.name} (${fileSize} MB)`;
-            }
-        });
+
 
         // Send button click handler
         document.querySelector('.ai-send-btn').addEventListener('click', function(e) {
@@ -1746,10 +1697,24 @@
         function handleSearch(event) {
             const searchInput = document.getElementById('searchInput');
             if (event && event.key === 'Enter' || !event) {
-                if (searchInput.value.trim() !== '') {
+                const searchQuery = searchInput.value.trim();
+                if (searchQuery !== '') {
+                    // Store the search query in sessionStorage
+                    sessionStorage.setItem('courseSearch', searchQuery);
+                    // Navigate to courses.html
                     window.location.href = 'courses.html';
                 }
             }
+        }
+
+        function navigateToPYQ(course, examType) {
+            // Store the selected filters in sessionStorage
+            const filters = {
+                course: course,
+                examType: examType
+            };
+            sessionStorage.setItem('pyqFilters', JSON.stringify(filters));
+            window.location.href = 'pyq.html';
         }
 
         // Debug function

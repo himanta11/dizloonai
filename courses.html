@@ -825,6 +825,50 @@
     </div>
 
     <script>
+        // Handle search query from home page
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchQuery = sessionStorage.getItem('courseSearch');
+            if (searchQuery) {
+                // Clear the search query from sessionStorage
+                sessionStorage.removeItem('courseSearch');
+                
+                // Search through all exam items
+                const examItems = document.querySelectorAll('.exam-item');
+                let foundMatch = false;
+                
+                examItems.forEach(item => {
+                    const abbr = item.querySelector('.exam-abbr').textContent.toLowerCase();
+                    const fullname = item.querySelector('.exam-fullname').textContent.toLowerCase();
+                    const query = searchQuery.toLowerCase();
+                    
+                    // Check if the exam matches the search query
+                    if (abbr.includes(query) || fullname.includes(query)) {
+                        foundMatch = true;
+                        // Expand the parent card if needed
+                        const examList = item.closest('.exam-list');
+                        if (examList) {
+                            const category = examList.id.split('-')[0];
+                            toggleExams(category);
+                        }
+                        
+                        // Scroll the item into view
+                        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Highlight the item temporarily
+                        item.style.backgroundColor = 'var(--light-blue)';
+                        setTimeout(() => {
+                            item.style.backgroundColor = '';
+                        }, 2000);
+                    }
+                });
+                
+                // Show message if no matches found
+                if (!foundMatch) {
+                    alert('No courses found matching your search: ' + searchQuery);
+                }
+            }
+        });
+
         // Toggle expanded view for exams
         function toggleExams(category) {
             const list = document.getElementById(`${category}-list`);

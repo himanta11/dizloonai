@@ -52,7 +52,6 @@
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
         
         .test-info h1 {
@@ -345,67 +344,83 @@
             }
         }
         
-        @media (max-width: 480px) {
-            .question-grid {
-                grid-template-columns: repeat(3, 1fr);
+        @media (max-width: 440px) {
+            .mobile-nav-fab {
+                display: flex !important;
             }
-            
-            .question-text {
-                font-size: 1rem;
+
+            .mobile-nav-drawer {
+                display: block !important;
             }
-            
-            .option {
-                padding: 12px;
+
+            .question-nav {
+                display: none !important;
             }
-        }
-        
-        @media (max-width: 400px) {
+
+            body {
+                padding-bottom: 80px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
             .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+                padding: 15px;
+                margin-bottom: 15px;
             }
-            
+
             .header-controls {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: flex-end;
             }
-            
+
             .timer-container {
                 padding: 8px 15px;
             }
-            
-            .subject-filter {
-                padding: 8px 12px;
+
+            .question-main {
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            .question-text {
+                font-size: 0.95rem;
+                margin-bottom: 20px;
+            }
+
+            .option {
+                padding: 12px;
                 font-size: 0.9rem;
-                max-width: 120px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
-            
-            .subject-filter option {
-                font-size: 0.9rem;
+
+            .question-nav {
+                padding: 12px;
+                border-radius: 10px;
             }
-            
-            .filter-section {
-                display: none;
+
+            .question-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
             }
-            
+
+            .question-number {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+
             .action-buttons {
-                flex-direction: column;
                 gap: 12px;
             }
-            
-            .action-buttons .btn-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
+
             .btn {
-                flex: 1;
                 padding: 10px 15px;
                 font-size: 0.9rem;
+            }
+
+            .btn-group {
+                gap: 8px;
             }
         }
         
@@ -422,10 +437,11 @@
             color: white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             cursor: pointer;
-            z-index: 100;
+            z-index: 1000;
             align-items: center;
             justify-content: center;
             transition: transform 0.2s ease;
+            font-size: 24px;
         }
 
         .mobile-nav-fab:active {
@@ -441,11 +457,12 @@
             background: white;
             border-radius: 20px 20px 0 0;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            z-index: 1000;
+            z-index: 999;
             transform: translateY(100%);
             transition: transform 0.3s ease;
             max-height: 80vh;
             overflow-y: auto;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
         .mobile-nav-drawer.active {
@@ -461,7 +478,7 @@
             position: sticky;
             top: 0;
             background: white;
-            z-index: 1;
+            z-index: 2;
         }
 
         .drawer-title {
@@ -475,7 +492,17 @@
             font-size: 1.2rem;
             color: var(--text-light);
             cursor: pointer;
-            padding: 5px;
+            padding: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .drawer-close:active {
+            background-color: rgba(0,0,0,0.05);
         }
 
         .drawer-stats {
@@ -483,26 +510,61 @@
             color: var(--text-light);
             font-size: 0.9rem;
             border-bottom: 1px solid var(--border);
+            background: white;
         }
 
         .mobile-question-grid {
             padding: 20px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
         }
 
-        @media (max-width: 400px) {
-            .mobile-nav-fab {
-                display: flex;
+        .mobile-question-grid .question-number {
+            width: 100%;
+            height: 40px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-question-grid .question-number.visited {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .mobile-question-grid .question-number.current {
+            border: 2px solid var(--primary);
+            background-color: white;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (min-width: 401px) and (max-width: 440px) {
+            .container {
+                padding: 12px;
             }
 
-            .mobile-nav-drawer {
-                display: block;
+            .question-main {
+                padding: 18px;
             }
 
-            .question-nav {
-                display: none;
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .option {
+                padding: 14px;
+            }
+
+            .question-number {
+                width: 34px;
+                height: 34px;
             }
         }
     </style>
@@ -515,26 +577,11 @@
                 <p>90 minutes • 100 questions</p>
             </div>
             <div class="header-controls">
-                <select class="subject-filter" id="subjectFilter">
-                    <option value="all">All Subjects</option>
-                    <option value="maths">Mathematics</option>
-                    <option value="reasoning">General Intelligence & Reasoning</option>
-                    <option value="general">General Awareness</option>
-                </select>
                 <div class="timer-container">
                     <i class="fas fa-clock"></i>
                     <div class="timer" id="timer">01:30:00</div>
                 </div>
             </div>
-        </div>
-        
-        <div class="filter-section">
-            <select class="subject-filter" id="subjectFilterDesktop">
-                <option value="all">Subjects</option>
-                <option value="maths">Mathematics</option>
-                <option value="reasoning">General Intelligence & Reasoning</option>
-                <option value="general">General Awareness</option>
-            </select>
         </div>
         
         <div class="test-container">
@@ -613,18 +660,20 @@
     </div>
 
     <script>
+    // Get URL parameters - defined globally for the script
+    const urlParams = new URLSearchParams(window.location.search);
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Get test ID from URL or use default
-        const urlParams = new URLSearchParams(window.location.search);
         const testId = urlParams.get('test') || 'RRB_NTPC_CBT1_001';
         
         // Show test ID in the header
         document.querySelector('.test-info h1').textContent = `RRB NTPC CBT 1 Mock Test (${testId})`;
         
-        // Fetch questions from mock_test_batch.json
-        console.log('Fetching questions from:', '../backend/mock_test_batch.json');
+        // Fetch questions from RRB_mocktest.json
+        console.log('Fetching questions from:', '../backend/RRB_mocktest.json');
         
-        fetch('../backend/mock_test_batch.json')
+        fetch('../backend/RRB_mocktest.json')
             .then(response => {
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
@@ -682,7 +731,6 @@
         // Test configuration
         const totalQuestions = questions.length;
         let currentQuestion = 1;
-        let timeLeft = 90 * 60; // 90 minutes in seconds
         let answers = new Array(totalQuestions).fill(null);
         let timerInterval;
         
@@ -698,8 +746,6 @@
         const saveStatus = document.getElementById('saveStatus');
         const questionGrid = document.getElementById('questionGrid');
         const answeredCount = document.getElementById('answeredCount');
-        const subjectFilter = document.getElementById('subjectFilter');
-        const subjectFilterDesktop = document.getElementById('subjectFilterDesktop');
         const mobileNavFab = document.getElementById('mobileNavFab');
         const mobileNavDrawer = document.getElementById('mobileNavDrawer');
         const drawerClose = document.getElementById('drawerClose');
@@ -725,35 +771,54 @@
 
         // Start timer
         function startTimer() {
-            updateTimerDisplay();
+            let elapsedTime = 0;
+            const testDuration = 90 * 60; // 90 minutes in seconds
+            
+            updateTimerDisplay(elapsedTime, testDuration);
             timerInterval = setInterval(function() {
-                timeLeft--;
-                updateTimerDisplay();
+                elapsedTime++;
+                updateTimerDisplay(elapsedTime, testDuration);
                 
-                if (timeLeft <= 0) {
+                if (elapsedTime >= testDuration) {
                     clearInterval(timerInterval);
-                    alert('Time is up! Test will be submitted automatically.');
-                    // In a real app, this would submit the test
+                    alert('Time is up! Your test will be submitted automatically.');
+                    submitTest();
                 }
             }, 1000);
         }
 
         // Update timer display
-        function updateTimerDisplay() {
-            const hours = Math.floor(timeLeft / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            const seconds = timeLeft % 60;
+        function updateTimerDisplay(elapsedTime, totalTime) {
+            const remainingTime = totalTime - elapsedTime;
+            const hours = Math.floor(elapsedTime / 3600);
+            const minutes = Math.floor((elapsedTime % 3600) / 60);
+            const seconds = elapsedTime % 60;
             
             timerElement.textContent = 
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Change color when time is running low
+            // Change color when time is running low (last 10 minutes)
             timerElement.classList.remove('warning', 'critical');
-            if (timeLeft <= 10 * 60) { // 10 minutes left
+            if (remainingTime <= 10 * 60) { // 10 minutes left
                 timerElement.classList.add('warning');
+                if (!document.getElementById('timeWarning')) {
+                    const warningDiv = document.createElement('div');
+                    warningDiv.id = 'timeWarning';
+                    warningDiv.style.color = '#ff9800';
+                    warningDiv.style.fontWeight = 'bold';
+                    warningDiv.style.marginTop = '5px';
+                    warningDiv.textContent = '10 minutes remaining!';
+                    timerElement.parentElement.appendChild(warningDiv);
+                }
             }
-            if (timeLeft <= 5 * 60) { // 5 minutes left
+            if (remainingTime <= 5 * 60) { // 5 minutes left
                 timerElement.classList.add('critical');
+                const warningDiv = document.getElementById('timeWarning');
+                if (warningDiv) {
+                    warningDiv.style.color = '#f44336';
+                    warningDiv.style.animation = 'pulse 1s infinite';
+                    warningDiv.textContent = 'Less than 5 minutes remaining!';
+                }
             }
         }
 
@@ -819,6 +884,17 @@
                 questionNumber.className = 'question-number';
                 questionNumber.textContent = i;
                 questionNumber.dataset.question = i;
+                
+                // Add visited class if already answered
+                if (answers[i - 1] !== null) {
+                    questionNumber.classList.add('visited');
+                }
+                
+                // Add current class if it's the current question
+                if (i === currentQuestion) {
+                    questionNumber.classList.add('current');
+                }
+                
                 questionNumber.addEventListener('click', function() {
                     navigateToQuestion(parseInt(this.dataset.question));
                     closeMobileNav();
@@ -834,36 +910,24 @@
         loadQuestion(questions[0]);
 
         // Add event listeners
-        // Sync both subject filters
-        function syncSubjectFilters(value) {
-            subjectFilter.value = value;
-            subjectFilterDesktop.value = value;
-        }
-        
-        subjectFilter.addEventListener('change', function() {
-            syncSubjectFilters(this.value);
-            // In a real app, this would filter questions by subject
-            console.log(`Filtering by subject: ${this.value}`);
-        });
-        
-        subjectFilterDesktop.addEventListener('change', function() {
-            syncSubjectFilters(this.value);
-            // In a real app, this would filter questions by subject
-            console.log(`Filtering by subject: ${this.value}`);
-        });
-
         // Update navigation grid
         function updateNavigationGrid() {
-            questionGrid.querySelectorAll('.question-number').forEach(number => {
-                number.classList.remove('current', 'visited');
-                
-                if (parseInt(number.dataset.question) === currentQuestion) {
-                    number.classList.add('current');
-                }
-                
-                if (answers[parseInt(number.dataset.question) - 1] !== null) {
-                    number.classList.add('visited');
-                }
+            // Update both desktop and mobile grids
+            const allGrids = [questionGrid, mobileQuestionGrid];
+            
+            allGrids.forEach(grid => {
+                if (!grid) return;
+                grid.querySelectorAll('.question-number').forEach(number => {
+                    number.classList.remove('current', 'visited');
+                    
+                    if (parseInt(number.dataset.question) === currentQuestion) {
+                        number.classList.add('current');
+                    }
+                    
+                    if (answers[parseInt(number.dataset.question) - 1] !== null) {
+                        number.classList.add('visited');
+                    }
+                });
             });
         }
 
@@ -891,7 +955,7 @@
                 trackPerformanceData(questions[currentQuestion - 1], selectedAnswer);
                 
                 saveStatus.textContent = 'Answer saved';
-                updateNavigationGrid();
+                updateNavigationGrid(); // This now updates both grids
                 updateAnsweredCount();
                 
                 // Auto-advance to next question if not the last
@@ -1043,13 +1107,35 @@
             }
             
             if (confirm('Are you sure you want to finish the test? You will not be able to return to it.')) {
-                // In a real app, this would submit the test
-                alert('Test submitted! Results will be shown shortly.');
-                clearInterval(timerInterval);
-                // Redirect to results page or home
-                window.location.href = 'mocktest.html';
+                submitTest();
             }
         });
+
+        // Function to submit test
+        function submitTest() {
+            // Clear the timer
+            clearInterval(timerInterval);
+            
+            // Save current answers if any selected
+            const selectedOption = optionsContainer.querySelector('.option.selected');
+            if (selectedOption) {
+                const selectedAnswer = selectedOption.dataset.option;
+                answers[currentQuestion - 1] = selectedAnswer;
+            }
+            
+            // Calculate score
+            const answeredQuestions = answers.filter(answer => answer !== null).length;
+            const score = Math.round((answeredQuestions / totalQuestions) * 100);
+            
+            // Record the attempt in parent window
+            if (window.parent && window.parent.completeTest) {
+                window.parent.completeTest(testId, score);
+            }
+            
+            alert('Test submitted! Results will be shown shortly.');
+            // Redirect to mocktest.html
+            window.location.href = 'mocktest.html';
+        };
 
         // Mobile navigation functions
         function openMobileNav() {

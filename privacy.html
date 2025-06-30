@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - ExamAI</title>
+    <title>Privacy Policy - Dizloon</title>
+    <link rel="icon" type="image/png" href="favicon/aspirant.png">
+    <link rel="shortcut icon" type="image/png" href="favicon/aspirant.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Gasket+One:wght@400;700&family=League+Spartan:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,10 +27,27 @@
         }
         
         body {
-            background-color: var(--dark);
-            color: var(--light);
+            background: #000000;
+            color: var(--dark);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 192, 203, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(230, 230, 250, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(173, 216, 230, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 60%, rgba(176, 224, 230, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
         }
         
         .container {
@@ -44,31 +63,57 @@
             width: 100%;
             top: 0;
             z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(12px);
-            background-color: rgba(255, 255, 255, 0.7);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(45, 45, 58, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         nav {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
+            gap: 40px;
+            width: 100%;
+            padding: 0 30px;
+            height: 70px;
         }
-        
-        .logo-tab {
-            background-color: var(--blue);
-            border-radius: 20px;
-            padding: 10px 25px;
-            display: inline-block;
-        }
-        
-        .logo-tab span {
-            font-family: 'Gasket One', sans-serif;
-            color: var(--yellow);
-            font-size: 24px;
-            text-transform: lowercase;
+
+        .header-brand {
+            font-family: 'League Spartan', sans-serif;
             font-weight: 700;
+            font-size: 2.8rem;
+            background: linear-gradient(
+                45deg,
+                #FF0080 0%,
+                #FF3D9A 20%,
+                #7928CA 40%,
+                #0070F3 60%,
+                #00DFD8 80%,
+                #FF0080 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.03em;
+            text-transform: lowercase;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            background-size: 200% auto;
+            animation: gradient 3s linear infinite;
+            filter: brightness(1.5) contrast(1.2);
+            text-shadow: 
+                0 0 20px rgba(255, 0, 128, 0.5),
+                0 0 40px rgba(255, 0, 128, 0.3);
+            transform: translateY(-2px);
+            position: relative;
+            mix-blend-mode: lighten;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* Privacy Policy Content */
@@ -79,15 +124,27 @@
         .privacy-header {
             text-align: center;
             margin-bottom: 60px;
-            background: linear-gradient(135deg, var(--purple), var(--blue));
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 223, 216, 0.1));
             padding: 60px 20px;
             border-radius: 20px;
-            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
         }
 
         .privacy-header h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
+            background: linear-gradient(
+                45deg,
+                #FF0080 0%,
+                #7928CA 30%,
+                #0070F3 60%,
+                #00DFD8 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
         }
 
         .privacy-header p {
@@ -95,29 +152,43 @@
             opacity: 0.9;
             max-width: 800px;
             margin: 0 auto;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .policy-section {
-            background: var(--glass);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 30px;
-            border: 1px solid rgba(45, 45, 58, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            animation: fadeInUp 0.8s forwards;
+            opacity: 0;
         }
 
         .policy-section:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(94, 23, 235, 0.1);
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .policy-section h2 {
-            color: var(--purple);
+            background: linear-gradient(
+                45deg,
+                #FF0080 0%,
+                #7928CA 50%,
+                #0070F3 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             font-size: 1.8rem;
             margin-bottom: 20px;
             position: relative;
             padding-bottom: 10px;
+            display: inline-block;
         }
 
         .policy-section h2::after {
@@ -127,19 +198,20 @@
             left: 0;
             width: 60px;
             height: 3px;
-            background: var(--pink);
+            background: linear-gradient(90deg, #FF0080, #00DFD8);
             border-radius: 3px;
         }
 
         .policy-section p {
             margin-bottom: 15px;
             line-height: 1.6;
-            color: var(--light);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .policy-section ul {
             margin: 20px 0;
             padding-left: 20px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .policy-section li {
@@ -151,16 +223,28 @@
             text-align: center;
             margin-top: 40px;
             padding: 20px;
-            color: var(--light);
-            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Footer Section */
         footer {
-            background: linear-gradient(135deg, var(--purple), var(--blue));
+            background: #000000;
             color: var(--dark);
             padding: 80px 0 30px;
-            margin-top: 60px;
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .footer-container {
@@ -185,14 +269,27 @@
         .social-links a {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
+            padding: 5px 0;
+            display: inline-block;
+            position: relative;
+            background: linear-gradient(
+                to right,
+                rgba(255, 0, 128, 0.7),
+                rgba(0, 223, 216, 0.7)
+            );
+            background-size: 200% 1px;
+            background-position: 100% 100%;
+            background-repeat: no-repeat;
         }
 
         .footer-links a:hover,
         .policy-links a:hover,
         .social-links a:hover {
-            color: white;
+            color: rgba(255, 255, 255, 1);
             transform: translateX(5px);
+            background-position: 0% 100%;
         }
 
         /* Responsive Design */
@@ -221,13 +318,9 @@
 <body>
     <!-- Header -->
     <header>
-        <div class="container">
-            <nav>
-                <a href="index.html" class="logo-tab">
-                    <span>aspirant</span>
-                </a>
-            </nav>
-        </div>
+        <nav>
+            <a href="/" class="header-brand">dizloon</a>
+        </nav>
     </header>
 
     <!-- Privacy Policy Content -->
@@ -235,7 +328,7 @@
         <div class="container">
             <div class="privacy-header">
                 <h1>Privacy Policy</h1>
-                <p>Welcome to ASPIRANT AI. We are committed to protecting your privacy and ensuring you have a safe and enjoyable experience on our platform. This Privacy Policy explains how we collect, use, and protect your information when you use our services.</p>
+                <p>Welcome to Dizloon. We are committed to protecting your privacy and ensuring you have a safe and enjoyable experience on our platform. This Privacy Policy explains how we collect, use, and protect your information when you use our services.</p>
             </div>
 
             <div class="policy-section">
@@ -289,7 +382,7 @@
                 <h2>Contact Us</h2>
                 <p>If you have any questions about our Privacy Policy or how we handle your data, please contact us:</p>
                 <ul>
-                    <li>Email: privacy@aspirant.com</li>
+                    <li>Email: privacy@dizloon.com</li>
                     <li>Phone: +1 (555) 123-4567</li>
                     <li>Address: 123 Learning Street, Education City, 12345</li>
                 </ul>

@@ -742,6 +742,19 @@
                 const loginData = await loginResponse.json();
                 authManager.setToken(loginData.access_token);
                 
+                // Initialize user data with free membership
+                const userData = {
+                    email: email,
+                    membership: 'free',  // Explicitly set as free
+                    joinDate: new Date().toISOString()
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
+                // Initialize stats
+                if (window.statsManager) {
+                    window.statsManager.initializeStats();
+                }
+                
                 submitBtn.textContent = 'Success! Redirecting...';
                 setTimeout(() => {
                     window.location.href = 'home.html';

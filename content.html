@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aspirant AI</title>
+    <title>Dizloon AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -677,12 +677,63 @@
         .touch-indicator.show {
             opacity: 1;
         }
+
+        /* Desktop Styles */
+        @media screen and (min-width: 1024px) {
+            .chat-screen {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 40px;
+            }
+
+            .header {
+                padding: 30px 40px;
+            }
+
+            .chat-container {
+                padding: 40px;
+                max-width: 900px;
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            .message {
+                max-width: 75%;
+                margin-bottom: 30px;
+            }
+
+            .user-message {
+                padding: 16px 24px;
+            }
+
+            .ai-message {
+                padding: 20px;
+            }
+
+            .input-container {
+                padding: 25px 40px;
+                max-width: 900px;
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            .input-field {
+                padding: 16px 60px 16px 25px;
+                font-size: 1.1rem;
+            }
+
+            .send-button {
+                width: 45px;
+                height: 45px;
+                right: 15px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="chat-screen" id="chatScreen">
         <div class="header">
-            <div class="logo">Aspirant AI</div>
+            <div class="logo">Dizloon AI</div>
         </div>
 
         <div class="chat-container" id="chatContainer">
@@ -691,7 +742,7 @@
 
         <div class="input-container">
             <div class="input-wrapper">
-                <input type="text" class="input-field" placeholder="Message Aspirant AI..." id="userInput">
+                <input type="text" class="input-field" placeholder="Message Dizloon AI..." id="userInput">
                 <button class="send-button" id="sendButton">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="sendIcon">
                         <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

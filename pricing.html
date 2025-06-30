@@ -406,13 +406,16 @@
                 }
                 
                 const plansData = await plansResponse.json();
-                const proPlan = plansData.plans.find(plan => plan.name === 'Pro Plan');
+                console.log('Available plans:', plansData.plans); // Debug log to see available plans
+                
+                // Look for the Pro Plan
+                const proPlan = plansData.plans.find(plan => plan.name === "Pro Plan");
                 
                 if (!proPlan) {
                     throw new Error('Pro Plan not found');
                 }
 
-                // Create payment order
+                // Create payment order with the special offer price
                 const token = localStorage.getItem('token');
                 const orderResponse = await fetch(API_CONFIG.baseUrl + API_CONFIG.endpoints.payment.createOrder, {
                     method: 'POST',

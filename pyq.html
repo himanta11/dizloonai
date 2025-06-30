@@ -847,9 +847,8 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            transform: scale(0);
+            transform: scale(0.9);
             transition: transform 0.3s ease;
-            z-index: 10;
         }
 
         .popup-overlay.active .card {
@@ -906,6 +905,32 @@
             margin-bottom: 15px;
         }
 
+        .popup-overlay .feature-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .popup-overlay .feature-icon.pink {
+            background-color: #ff86eb;
+            color: #ffffff;
+        }
+
+        .popup-overlay .feature-icon.green {
+            background-color: #b3f461;
+            color: #333333;
+        }
+
+        .popup-overlay .feature-text {
+            font-size: 14px;
+            color: #333333;
+        }
+
         .popup-overlay .upgrade-btn {
             display: block;
             width: 100%;
@@ -924,6 +949,28 @@
         .popup-overlay .upgrade-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(94, 23, 235, 0.3);
+        }
+
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .decoration-1 {
+            width: 100px;
+            height: 100px;
+            background-color: #ff86eb;
+            top: -30px;
+            left: -30px;
+        }
+
+        .decoration-2 {
+            width: 60px;
+            height: 60px;
+            background-color: #b3f461;
+            bottom: 20px;
+            right: -20px;
         }
     </style>
 </head>
@@ -1040,6 +1087,28 @@
             checkAuthAndLimits();
             setupDynamicFilters();
             setupPopupEvents();
+            
+            // Check for pre-selected filters from home page
+            const savedFilters = sessionStorage.getItem('pyqFilters');
+            if (savedFilters) {
+                const filters = JSON.parse(savedFilters);
+                
+                // Set the course and exam type
+                const courseSelect = document.getElementById('course');
+                const examTypeSelect = document.getElementById('examType');
+                
+                courseSelect.value = filters.course;
+                updateExamTypeOptions(filters.course);
+                
+                examTypeSelect.value = filters.examType;
+                updateExamStageOptions(filters.course, filters.examType);
+                
+                // Clear the saved filters
+                sessionStorage.removeItem('pyqFilters');
+                
+                // Auto-generate questions
+                generateQuestions();
+            }
         });
         
         // Check if returning from AI explanation
@@ -1720,8 +1789,7 @@
 
         // Popup control functions
         function showUpgradePopup() {
-            const popup = document.getElementById('upgradePopup');
-            popup.classList.add('active');
+            window.location.href = 'popup.html';
         }
 
         function closeUpgradePopup() {
@@ -1751,7 +1819,7 @@
             }
         }
 
-        // Check if user has reached PYQ limit
+        // Function to check if user has reached PYQ limit
         async function checkPYQLimit() {
             try {
                 const headers = await authManager.getAuthHeaders();
@@ -1761,6 +1829,12 @@
                 });
 
                 const data = await response.json();
+                
+                // If user has reached their limit, show the popup
+                if (!data.allowed && userLimits.tier !== 'PRO') {
+                    showLimitPopup();
+                }
+                
                 return data;
             } catch (error) {
                 console.error('Error checking PYQ limit:', error);
@@ -1772,18 +1846,91 @@
             }
         }
 
-        function setupPopupEvents() {
-            const popup = document.getElementById('upgradePopup');
-            
-            // Close popup when clicking outside the card
-            popup.addEventListener('click', function(e) {
-                if (e.target === popup) {
-                    closeUpgradePopup();
-                }
-            });
+        // Function to show limit popup
+        function showLimitPopup() {
+            // Create and show the popup
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay active';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                opacity: 1;
+                pointer-events: all;
+            `;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="close-btn" onclick="closeUpgradePopup()">×</div>
+                    <h2>You've Hit Your Free Limit!</h2>
+                    <p>Upgrade to Pro to unlock unlimited PYQs</p>
+                    <div class="decoration decoration-1"></div>
+                    <div class="decoration decoration-2"></div>
+                </div>
+                <div class="card-body">
+                    <div class="features">
+                        <div class="feature">
+                            <div class="feature-icon pink">✓</div>
+                            <div class="feature-text">Access to all previous year questions</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon green">✓</div>
+                            <div class="feature-text">Detailed solutions and explanations</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon pink">✓</div>
+                            <div class="feature-text">Topic-wise question banks</div>
+                        </div>
+                    </div>
+                    <button class="upgrade-btn" onclick="goToPricing()">Upgrade to Pro Now</button>
+                </div>
+            `;
+
+            overlay.appendChild(card);
+            document.body.appendChild(overlay);
+
+            // Add animation
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+            }, 10);
         }
 
-        function checkAnswer(optionElement, correctAnswer, selectedAnswer) {
+        // Function to close the popup
+        function closeUpgradePopup() {
+            const popup = document.querySelector('.popup-overlay');
+            if (popup) {
+                popup.classList.remove('active');
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            }
+        }
+
+        // Function to go to pricing page
+        function goToPricing() {
+            window.location.href = 'pricing.html';
+        }
+
+        // Update the checkAnswer function to check limits
+        async function checkAnswer(optionElement, correctAnswer, selectedAnswer) {
+            // Check if user has reached their limit before showing answer
+            if (userLimits && userLimits.tier !== 'PRO') {
+                const limitCheck = await checkPYQLimit();
+                if (!limitCheck.allowed) {
+                    showLimitPopup();
+                    return;
+                }
+            }
+
             const questionCard = optionElement.closest('.question-card');
             
             if (questionCard.querySelector('.option.correct, .option.incorrect')) {
@@ -1813,6 +1960,22 @@
             // Track answer stats
             statsManager.recordAnswer(isCorrect, 'pyq');
             statsManager.updateStreak('pyq');
+
+            // Record usage for free users
+            if (userLimits && userLimits.tier !== 'PRO') {
+                await recordPYQUsage();
+            }
+        }
+
+        function setupPopupEvents() {
+            const popup = document.getElementById('upgradePopup');
+            
+            // Close popup when clicking outside the card
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    closeUpgradePopup();
+                }
+            });
         }
     </script>
 </body>

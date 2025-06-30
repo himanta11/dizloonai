@@ -473,7 +473,9 @@
         function setMembershipStatus() {
             // Get user data from localStorage or set default
             const userData = JSON.parse(localStorage.getItem('userData')) || {};
-            const membership = userData.membership || 'free';
+            
+            // Explicitly check for premium/pro status, default to free
+            const membership = userData.membership === 'premium' || userData.membership === 'pro' ? userData.membership : 'free';
             
             // Update profile badge in header
             const profileBadge = document.querySelector('.profile-badge');
@@ -505,6 +507,15 @@
         // Initialize membership status when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setMembershipStatus();
+            
+            // Also check auth status
+            if (window.authManager) {
+                const isAuthenticated = window.authManager.isAuthenticated();
+                if (!isAuthenticated) {
+                    // If not authenticated, redirect to login
+                    window.location.href = 'auth.html';
+                }
+            }
         });
     </script>
 </body>
