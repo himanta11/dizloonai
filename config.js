@@ -1,6 +1,6 @@
 // API Configuration
 const API_CONFIG = {
-    baseUrl: 'https://backendrender-o1bo.onrender.com',
+    baseUrl: 'backendrender-production-ccdd.up.railway.app',
     apiKey: '', // Add your API key here if needed
     endpoints: {
         auth: {
