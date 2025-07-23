@@ -1236,12 +1236,7 @@
                     <span>Reel</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="pricing.html">
-                    <i class="fas fa-tags"></i>
-                    <span>Pricing</span>
-                </a>
-            </li>
+
         </ul>
     </div>
     
@@ -1515,8 +1510,10 @@
 
         // Handle logout
         function handleLogout() {
-            authManager.removeToken();
-            window.location.href = 'index.html';
+            if (confirm('Are you sure you want to logout? You will need to login again.')) {
+                authManager.removeToken();
+                window.location.href = 'index.html';
+            }
         }
 
         // Course selection elements
