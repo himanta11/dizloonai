@@ -3,6 +3,18 @@ class AuthManager {
     constructor() {
         this.token = localStorage.getItem('token');
         this.refreshInProgress = false;
+        
+        // Check if token has expired (for non-remember me users)
+        const rememberMe = localStorage.getItem('rememberMe') === 'true';
+        const expirationDate = localStorage.getItem('tokenExpiration');
+        
+        if (!rememberMe && expirationDate) {
+            const expiration = new Date(expirationDate);
+            if (new Date() > expiration) {
+                // Token has expired, remove it
+                this.removeToken();
+            }
+        }
     }
 
     // Check if user is authenticated
@@ -16,9 +28,21 @@ class AuthManager {
     }
 
     // Set token
-    setToken(token) {
+    setToken(token, rememberMe = false) {
         this.token = token;
         localStorage.setItem('token', token);
+        
+        // If remember me is selected, set a longer expiration
+        if (rememberMe) {
+            localStorage.setItem('rememberMe', 'true');
+            // Set token to expire in 30 days instead of default
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+            localStorage.setItem('tokenExpiration', expirationDate.toISOString());
+        } else {
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('tokenExpiration');
+        }
     }
 
     // Remove token (logout)
@@ -128,6 +152,31 @@ class AuthManager {
                 await this.refreshToken();
             }
         }, 518400000);
+        
+        // Also refresh token when page becomes visible (user returns to tab)
+        document.addEventListener('visibilitychange', async () => {
+            if (!document.hidden && this.token) {
+                await this.refreshToken();
+            }
+        });
+        
+        // Refresh token when user interacts with the page after being idle
+        let idleTimer;
+        const resetIdleTimer = async () => {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(async () => {
+                if (this.token) {
+                    await this.refreshToken();
+                }
+            }, 300000); // 5 minutes of inactivity
+        };
+        
+        // Reset timer on user interaction
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+            document.addEventListener(event, resetIdleTimer, true);
+        });
+        
+        resetIdleTimer(); // Start the timer
     }
 
     // Check authentication on page load
