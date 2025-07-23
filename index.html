@@ -1153,6 +1153,19 @@
             }
         }
         
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .install-btn-appear {
+            animation: pulse 2s ease-in-out;
+        }
+        
         /* Mobile Specific Adjustments */
         @media (max-width: 440px) and (min-width: 350px) {
             /* Container and general padding */
@@ -1622,7 +1635,9 @@
             <p>Study less, Score more — The Dizloon way!</p>
             <div class="hero-buttons">
                 <button class="btn btn-primary" onclick="window.location.href='auth.html'; localStorage.setItem('authTab', 'signup')" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Try Free</button>
-                <button class="btn btn-outline" onclick="window.location.href='auth.html'; localStorage.setItem('authTab', 'signup')" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Explore</button>
+                <button class="btn btn-outline" id="installBtn" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; display: none;">
+                    <span style="margin-right: 5px;">📱</span>Install App
+                </button>
             </div>
         </div>
     </section>
@@ -1880,9 +1895,82 @@
         }
     </style>
     
+    <script src="config.js"></script>
+    <script src="auth-utils.js"></script>
     <script>
+        // PWA Installation Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install button with animation
+            installBtn.style.display = 'inline-block';
+            installBtn.classList.add('install-btn-appear');
+        });
+
+        // Handle install button click
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                // Clear the deferredPrompt variable
+                deferredPrompt = null;
+                // Hide the install button
+                installBtn.style.display = 'none';
+            }
+        });
+
+        // Listen for successful installation
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed');
+            // Hide the install button after successful installation
+            installBtn.style.display = 'none';
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Check if app is already installed or not installable
+        window.addEventListener('load', () => {
+            // Check if the app is already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('App is already installed');
+                installBtn.style.display = 'none';
+            }
+            
+            // Check if PWA is supported
+            if (!('serviceWorker' in navigator)) {
+                console.log('PWA not supported');
+                installBtn.style.display = 'none';
+            }
+        });
+
         // Enhanced animation trigger on scroll
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already authenticated and redirect to home
+            if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
+                window.location.href = 'home.html';
+                return;
+            }
+            
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -100px 0px'
