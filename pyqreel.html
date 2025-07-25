@@ -965,128 +965,21 @@
             }
 
             checkUserLimits() {
-                // Get user data from localStorage
-                const userData = JSON.parse(localStorage.getItem('userData')) || {};
-                const membership = userData.membership || 'free';
-                
-                if (membership === 'premium' || membership === 'pro') {
-                    // Premium users have unlimited access
-                    this.state.maxSessions = -1; // Unlimited
-                    this.state.questionsPerSession = -1; // Unlimited
-                    return;
-                }
-                
-                // Free user limits
-                this.state.maxSessions = 2;
-                this.state.questionsPerSession = 10;
-                
-                // Check daily usage
-                const today = new Date().toDateString();
-                const dailyUsage = JSON.parse(localStorage.getItem('pyqDailyUsage') || '{}');
-                
-                if (dailyUsage.date === today) {
-                    this.state.dailyUsage = dailyUsage.count || 0;
-                    this.state.sessionCount = dailyUsage.sessions || 0;
-                } else {
-                    // Reset for new day
-                    this.state.dailyUsage = 0;
-                    this.state.sessionCount = 0;
-                    localStorage.setItem('pyqDailyUsage', JSON.stringify({
-                        date: today,
-                        count: 0,
-                        sessions: 0
-                    }));
-                }
-                
-                // Check if user has exceeded limits
-                if (this.state.sessionCount >= this.state.maxSessions) {
-                    this.showLimitPopup();
-                    return;
-                }
+                // All users have unlimited access
+                this.state.maxSessions = -1; // Unlimited
+                this.state.questionsPerSession = -1; // Unlimited
+                this.state.dailyUsage = 0;
+                this.state.sessionCount = 0;
             }
 
             showLimitPopup() {
-                // Create and show the popup
-                const popupHTML = `
-                    <div class="popup-overlay active" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
-                        <div class="card" style="position: relative; width: 350px; background-color: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); overflow: hidden; transform: scale(1); z-index: 10;">
-                            <div class="card-header" style="background-color: #5e17eb; color: white; padding: 20px; text-align: center; position: relative;">
-                                <div class="close-btn" style="position: absolute; top: 15px; right: 15px; width: 25px; height: 25px; background-color: white; color: #5e17eb; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; font-size: 14px;">×</div>
-                                <h2 style="font-size: 24px; margin-bottom: 10px;">Daily Limit Reached!</h2>
-                                <p style="font-size: 14px; opacity: 0.9;">You've used all your free sessions today</p>
-                            </div>
-                            <div class="card-body" style="padding: 25px;">
-                                <div class="features" style="margin-bottom: 25px;">
-                                    <div class="feature" style="display: flex; align-items: center; margin-bottom: 15px;">
-                                        <div class="feature-icon pink" style="width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; background-color: #ff86eb; color: white;">✓</div>
-                                        <div class="feature-text" style="font-size: 14px; color: #333;">Unlimited PYQ sessions</div>
-                                    </div>
-                                    <div class="feature" style="display: flex; align-items: center; margin-bottom: 15px;">
-                                        <div class="feature-icon green" style="width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; background-color: #b3f461; color: #333;">✓</div>
-                                        <div class="feature-text" style="font-size: 14px; color: #333;">Access to all subjects</div>
-                                    </div>
-                                    <div class="feature" style="display: flex; align-items: center; margin-bottom: 15px;">
-                                        <div class="feature-icon pink" style="width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; background-color: #ff86eb; color: white;">✓</div>
-                                        <div class="feature-text" style="font-size: 14px; color: #333;">Detailed explanations</div>
-                                    </div>
-                                    <div class="feature" style="display: flex; align-items: center; margin-bottom: 15px;">
-                                        <div class="feature-icon green" style="width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; background-color: #b3f461; color: #333;">✓</div>
-                                        <div class="feature-text" style="font-size: 14px; color: #333;">Progress tracking</div>
-                                    </div>
-                                </div>
-                                <button class="upgrade-btn" style="display: block; width: 100%; padding: 15px; background-color: #5e17eb; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 20px;">Upgrade to Pro Now</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.insertAdjacentHTML('beforeend', popupHTML);
-                
-                // Add event listeners
-                const popup = document.querySelector('.popup-overlay');
-                const closeBtn = popup.querySelector('.close-btn');
-                const upgradeBtn = popup.querySelector('.upgrade-btn');
-                
-                closeBtn.addEventListener('click', () => {
-                    popup.remove();
-                    window.location.href = 'home.html';
-                });
-                
-                upgradeBtn.addEventListener('click', () => {
-                    popup.remove();
-                    window.location.href = 'pricing.html';
-                });
-                
-                popup.addEventListener('click', (e) => {
-                    if (e.target === popup) {
-                        popup.remove();
-                        window.location.href = 'home.html';
-                    }
-                });
+                // No popup needed - all users have unlimited access
+                return;
             }
 
             updateUsage() {
-                this.state.dailyUsage++;
-                
-                // Check if session is complete (10 questions answered)
-                if (this.state.dailyUsage % this.state.questionsPerSession === 0) {
-                    this.state.sessionCount++;
-                }
-                
-                // Save to localStorage
-                const today = new Date().toDateString();
-                localStorage.setItem('pyqDailyUsage', JSON.stringify({
-                    date: today,
-                    count: this.state.dailyUsage,
-                    sessions: this.state.sessionCount
-                }));
-                
-                // Check if limit reached
-                if (this.state.sessionCount >= this.state.maxSessions && this.state.maxSessions !== -1) {
-                    setTimeout(() => {
-                        this.showLimitPopup();
-                    }, 1000);
-                }
+                // No usage tracking needed - all users have unlimited access
+                return;
             }
 
             async init() {
@@ -1200,11 +1093,9 @@
                     console.log('Selected subject:', selectedSubject);
                     console.log('Mapped subject:', mappedSubject);
 
-                    // Limit questions for free users
-                    const questionLimit = this.state.maxSessions === -1 ? 20 : this.state.questionsPerSession;
-
-                    // Ensure we have a valid limit
-                    const validLimit = questionLimit || 10;  // Default to 10 if undefined
+                    // All users get unlimited questions
+                    const questionLimit = 20; // Default limit for API calls
+                    const validLimit = questionLimit;
                     
                     const requestBody = {
                         subject: mappedSubject,  // Use the mapped subject name instead of display name
@@ -1259,10 +1150,8 @@
                         return !hasDiagram;
                     });
 
-                    // Limit questions for free users
-                    const limitedQuestions = this.state.maxSessions === -1 ? 
-                        filteredQuestions : 
-                        filteredQuestions.slice(0, this.state.questionsPerSession);
+                    // All users get unlimited questions
+                    const limitedQuestions = filteredQuestions;
 
                     if (limitedQuestions.length < 5 && retryCount < this.config.retryAttempts) {
                         console.log('Not enough questions after filtering, fetching more...');
@@ -1306,12 +1195,6 @@
 
             async loadMoreQuestions() {
                 if (this.state.isLoading) return;
-                
-                // Check if free user has reached their session limit
-                if (this.state.maxSessions !== -1 && this.state.sessionCount >= this.state.maxSessions) {
-                    console.log('Free user has reached session limit');
-                    return;
-                }
                 
                 this.state.isLoading = true;
                 try {
