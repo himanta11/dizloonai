@@ -18,19 +18,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#FF0080">
-    <meta name="msapplication-TileColor" content="#FF0080">
-    <meta name="msapplication-config" content="/browserconfig.xml">
-    
-    <!-- PWA Installation -->
-    <meta name="apple-touch-fullscreen" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#0000FF">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon/aspirant.png">
     <link rel="apple-touch-icon" href="favicon/aspirant.png">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="favicon/site.webmanifest">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Gasket+One:wght@400;700&family=League+Spartan:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -58,6 +51,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            padding-top: 70px; /* Account for fixed header */
         }
         
         body::before {
@@ -89,6 +83,10 @@
             width: 100%;
             top: 0;
             z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
         
                 nav {
@@ -1160,6 +1158,19 @@
             }
         }
         
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .install-btn-appear {
+            animation: pulse 2s ease-in-out;
+        }
+        
         /* Mobile Specific Adjustments */
         @media (max-width: 440px) and (min-width: 350px) {
             /* Container and general padding */
@@ -1629,7 +1640,7 @@
             <p>Study less, Score more — The Dizloon way!</p>
             <div class="hero-buttons">
                 <button class="btn btn-primary" onclick="window.location.href='auth.html'; localStorage.setItem('authTab', 'signup')" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Try Free</button>
-                <button id="appButton" class="btn btn-outline" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Install App</button>
+                <button class="btn btn-outline" id="installBtn" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; display: none;">Install App</button>
             </div>
         </div>
     </section>
@@ -1782,7 +1793,7 @@
                     <div class="policy-links">
                         <a href="privacy.html">Privacy Policy</a>
                         <a href="terms.html">Terms & Conditions</a>
-                        <a href="/home">Home</a>
+                        <a href="/pricing">Pricing</a>
                     </div>
                 </div>
                 <div class="social-links">
@@ -1887,13 +1898,94 @@
         }
     </style>
     
+    <script src="config.js"></script>
+    <script src="auth-utils.js"></script>
     <script>
-        // PWA Installation Variables
+        // PWA Installation Logic
         let deferredPrompt;
-        let appButton;
+        const installBtn = document.getElementById('installBtn');
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install button with animation
+            installBtn.style.display = 'inline-block';
+            installBtn.classList.add('install-btn-appear');
+        });
+
+        // Handle install button click
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                // Clear the deferredPrompt variable
+                deferredPrompt = null;
+                // Hide the install button
+                installBtn.style.display = 'none';
+            }
+        });
+
+        // Listen for successful installation
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed');
+            // Hide the install button after successful installation
+            installBtn.style.display = 'none';
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Check if app is already installed or not installable
+        window.addEventListener('load', () => {
+            // Check if the app is already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('App is already installed');
+                installBtn.style.display = 'none';
+            }
+            
+            // Check if PWA is supported
+            if (!('serviceWorker' in navigator)) {
+                console.log('PWA not supported');
+                installBtn.style.display = 'none';
+            }
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(0, 0, 0, 0.98)';
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                header.style.background = 'rgba(0, 0, 0, 0.95)';
+                header.style.boxShadow = 'none';
+            }
+        });
 
         // Enhanced animation trigger on scroll
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already authenticated and redirect to home
+            if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
+                window.location.href = 'home.html';
+                return;
+            }
+            
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -100px 0px'
@@ -1917,142 +2009,14 @@
             const featureCards = document.querySelectorAll('.feature-card');
             featureCards.forEach(card => {
                 card.addEventListener('mouseenter', () => {
-                    const hueRotate = Math.floor(Math.random() * 60) - 30;
+                    const hueRotate = Math.floor(Math.random() * 60) - 30; // Random value between -30 and 30
                     card.style.filter = `hue-rotate(${hueRotate}deg) brightness(1.05)`;
                 });
                 card.addEventListener('mouseleave', () => {
                     card.style.filter = 'none';
                 });
             });
-
-            // Initialize PWA functionality
-            initPWA();
         });
-
-        // PWA Installation Functions
-        function initPWA() {
-            appButton = document.getElementById('appButton');
-            
-            // Listen for beforeinstallprompt event
-            window.addEventListener('beforeinstallprompt', (e) => {
-                console.log('PWA install prompt available');
-                e.preventDefault();
-                deferredPrompt = e;
-                
-                // Update button to show install option
-                updateAppButton();
-            });
-
-            // Listen for app installation
-            window.addEventListener('appinstalled', (evt) => {
-                console.log('App was installed');
-                localStorage.setItem('dizloonAppInstalled', 'true');
-                updateAppButton();
-            });
-
-            // Register service worker
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then(registration => {
-                            console.log('Service Worker registered successfully:', registration);
-                        })
-                        .catch(registrationError => {
-                            console.log('Service Worker registration failed:', registrationError);
-                        });
-                });
-            }
-
-            // Initial button update
-            updateAppButton();
-        }
-
-        function updateAppButton() {
-            if (!appButton) return;
-
-            const isInstalled = checkIfAppInstalled();
-            
-            if (isInstalled) {
-                appButton.textContent = 'Open App';
-                appButton.onclick = openApp;
-            } else if (deferredPrompt) {
-                appButton.textContent = 'Install App';
-                appButton.onclick = installApp;
-            } else {
-                appButton.textContent = 'Install App';
-                appButton.onclick = showInstallInstructions;
-            }
-        }
-
-        function checkIfAppInstalled() {
-            // Check for PWA installation
-            if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
-                return true;
-            }
-            
-            // Check localStorage
-            if (localStorage.getItem('dizloonAppInstalled') === 'true') {
-                return true;
-            }
-            
-            // Check if running in app-like environment
-            if (window.navigator.userAgent.includes('DizloonApp') || 
-                window.navigator.userAgent.includes('dizloon')) {
-                return true;
-            }
-            
-            return false;
-        }
-
-        function installApp() {
-            if (deferredPrompt) {
-                console.log('Showing install prompt');
-                deferredPrompt.prompt();
-                
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                        localStorage.setItem('dizloonAppInstalled', 'true');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-                    deferredPrompt = null;
-                    updateAppButton();
-                });
-            } else {
-                showInstallInstructions();
-            }
-        }
-
-        function openApp() {
-            // Try to open the app using deep link
-            const appUrl = 'dizloon://open';
-            const fallbackUrl = window.location.origin; // Use current domain as fallback
-            
-            window.location.href = appUrl;
-            
-            // Fallback after delay
-            setTimeout(() => {
-                if (!document.hidden) {
-                    window.location.href = fallbackUrl;
-                }
-            }, 1000);
-        }
-
-        function showInstallInstructions() {
-            // Show instructions for manual installation
-            const instructions = `
-                To install Dizloon AI:
-                
-                1. Click the menu (⋮) in your browser
-                2. Select "Install app" or "Add to home screen"
-                3. Follow the prompts to install
-                
-                Or visit: ${window.location.origin}
-            `;
-            
-            alert(instructions);
-        }
     </script>
 </body>
 </html>
