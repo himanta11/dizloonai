@@ -23,7 +23,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon/aspirant.png">
     <link rel="apple-touch-icon" href="favicon/aspirant.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
+    <link rel="manifest" href="manifest.json">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Gasket+One:wght@400;700&family=League+Spartan:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -51,7 +51,6 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            padding-top: 70px; /* Account for fixed header */
         }
         
         body::before {
@@ -83,10 +82,6 @@
             width: 100%;
             top: 0;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
         }
         
                 nav {
@@ -1158,19 +1153,6 @@
             }
         }
         
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-        
-        .install-btn-appear {
-            animation: pulse 2s ease-in-out;
-        }
-        
         /* Mobile Specific Adjustments */
         @media (max-width: 440px) and (min-width: 350px) {
             /* Container and general padding */
@@ -1640,7 +1622,7 @@
             <p>Study less, Score more — The Dizloon way!</p>
             <div class="hero-buttons">
                 <button class="btn btn-primary" onclick="window.location.href='auth.html'; localStorage.setItem('authTab', 'signup')" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Try Free</button>
-                <button class="btn btn-outline" id="installBtn" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; display: none;">Install App</button>
+                <button id="appButton" class="btn btn-outline" style="border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Install App</button>
             </div>
         </div>
     </section>
@@ -1793,7 +1775,7 @@
                     <div class="policy-links">
                         <a href="privacy.html">Privacy Policy</a>
                         <a href="terms.html">Terms & Conditions</a>
-                        <a href="/pricing">Pricing</a>
+                        <a href="/home">Home</a>
                     </div>
                 </div>
                 <div class="social-links">
@@ -1898,94 +1880,9 @@
         }
     </style>
     
-    <script src="config.js"></script>
-    <script src="auth-utils.js"></script>
     <script>
-        // PWA Installation Logic
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        // Listen for the beforeinstallprompt event
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            // Stash the event so it can be triggered later
-            deferredPrompt = e;
-            // Show the install button with animation
-            installBtn.style.display = 'inline-block';
-            installBtn.classList.add('install-btn-appear');
-        });
-
-        // Handle install button click
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                // Show the install prompt
-                deferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                // Clear the deferredPrompt variable
-                deferredPrompt = null;
-                // Hide the install button
-                installBtn.style.display = 'none';
-            }
-        });
-
-        // Listen for successful installation
-        window.addEventListener('appinstalled', (evt) => {
-            console.log('App was installed');
-            // Hide the install button after successful installation
-            installBtn.style.display = 'none';
-        });
-
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
-
-        // Check if app is already installed or not installable
-        window.addEventListener('load', () => {
-            // Check if the app is already installed
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('App is already installed');
-                installBtn.style.display = 'none';
-            }
-            
-            // Check if PWA is supported
-            if (!('serviceWorker' in navigator)) {
-                console.log('PWA not supported');
-                installBtn.style.display = 'none';
-            }
-        });
-
-        // Header scroll effect
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.style.background = 'rgba(0, 0, 0, 0.98)';
-                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
-            } else {
-                header.style.background = 'rgba(0, 0, 0, 0.95)';
-                header.style.boxShadow = 'none';
-            }
-        });
-
         // Enhanced animation trigger on scroll
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already authenticated and redirect to home
-            if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
-                window.location.href = 'home.html';
-                return;
-            }
-            
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -100px 0px'
@@ -2015,6 +1912,117 @@
                 card.addEventListener('mouseleave', () => {
                     card.style.filter = 'none';
                 });
+            });
+
+            // App installation detection and button behavior
+            const appButton = document.getElementById('appButton');
+            
+            // Check if the app is installed (using various methods)
+            function checkIfAppInstalled() {
+                // Method 1: Check for PWA installation
+                if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+                    return true;
+                }
+                
+                // Method 2: Check localStorage for installation status
+                if (localStorage.getItem('dizloonAppInstalled') === 'true') {
+                    return true;
+                }
+                
+                // Method 3: Check if running in app-like environment
+                if (window.navigator.userAgent.includes('DizloonApp') || 
+                    window.navigator.userAgent.includes('dizloon')) {
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            // Update button text and behavior based on installation status
+            function updateAppButton() {
+                const isInstalled = checkIfAppInstalled();
+                
+                if (isInstalled) {
+                    appButton.textContent = 'Open App';
+                    appButton.onclick = function() {
+                        // Try to open the app using various methods
+                        const appUrl = 'dizloon://open'; // Deep link to open app
+                        const fallbackUrl = 'http://localhost:5500'; // Local fallback URL
+                        
+                        // Try to open the app
+                        window.location.href = appUrl;
+                        
+                        // Fallback after a short delay if app doesn't open
+                        setTimeout(() => {
+                            if (document.hidden || document.webkitHidden) {
+                                // App opened successfully
+                                return;
+                            } else {
+                                // App didn't open, redirect to web version
+                                window.location.href = fallbackUrl;
+                            }
+                        }, 1000);
+                    };
+                } else {
+                    appButton.textContent = 'Install App';
+                    appButton.onclick = function() {
+                        // Show installation prompt for PWA
+                        if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+                            // PWA installation flow
+                            let deferredPrompt;
+                            
+                            window.addEventListener('beforeinstallprompt', (e) => {
+                                e.preventDefault();
+                                deferredPrompt = e;
+                                
+                                // Show install prompt
+                                deferredPrompt.prompt();
+                                
+                                deferredPrompt.userChoice.then((choiceResult) => {
+                                    if (choiceResult.outcome === 'accepted') {
+                                        localStorage.setItem('dizloonAppInstalled', 'true');
+                                        updateAppButton();
+                                    }
+                                    deferredPrompt = null;
+                                });
+                            });
+                        } else {
+                            // Fallback: redirect to app store or download page
+                            const downloadUrl = 'http://localhost:5500/download';
+                            window.open(downloadUrl, '_blank');
+                        }
+                    };
+                }
+            }
+            
+            // Initialize app button
+            updateAppButton();
+            
+            // Register service worker for PWA functionality
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(registration => {
+                            console.log('SW registered: ', registration);
+                        })
+                        .catch(registrationError => {
+                            console.log('SW registration failed: ', registrationError);
+                        });
+                });
+            }
+            
+            // Listen for app installation events
+            window.addEventListener('appinstalled', () => {
+                localStorage.setItem('dizloonAppInstalled', 'true');
+                updateAppButton();
+            });
+            
+            // Check for visibility changes (when app is opened)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    // Page became visible again, check if app was installed
+                    setTimeout(updateAppButton, 1000);
+                }
             });
         });
     </script>
