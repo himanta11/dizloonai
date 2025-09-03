@@ -1980,11 +1980,16 @@
 
         // Enhanced animation trigger on scroll
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already authenticated and redirect to home
-            if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
-                window.location.href = 'home.html';
-                return;
-            }
+                // Check if user is already authenticated and redirect to home
+                try {
+                    if (typeof authManager !== 'undefined' && authManager && typeof authManager.isAuthenticated === 'function' && authManager.isAuthenticated()) {
+                        window.location.href = 'home.html';
+                        return;
+                    }
+                } catch (e) {
+                    // If any error, do not redirect
+                    console.warn('authManager check failed:', e);
+                }
             
             const observerOptions = {
                 threshold: 0.1,
