@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Primary Meta Tags -->
     <title>Dizloon AI - Your Smart Learning Companion</title>
@@ -45,6 +45,24 @@
             font-family: 'Poppins', sans-serif;
         }
         
+        /* Prevent automatic scaling and ensure consistent rendering */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-text-size-adjust: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+        
         body {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 25%, #fff0f8 50%, #f0fff4 75%, #ffffff 100%);
             color: var(--light);
@@ -52,6 +70,8 @@
             overflow-x: hidden;
             position: relative;
             padding-top: 70px; /* Account for fixed header */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         body::before {
@@ -1953,6 +1973,10 @@
 
         // Check if app is already installed or not installable
         window.addEventListener('load', () => {
+            // Fix viewport scaling
+            fixViewportScaling();
+            
+            // Check if the app is already installed
             // Check if the app is already installed
             if (window.matchMedia('(display-mode: standalone)').matches) {
                 console.log('App is already installed');
@@ -1977,6 +2001,26 @@
                 header.style.boxShadow = 'none';
             }
         });
+
+        // Fix viewport scaling issues
+        function fixViewportScaling() {
+            // Force 1:1 pixel ratio on mobile devices
+            if (window.devicePixelRatio !== 1) {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 
+                        'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+                    );
+                }
+            }
+            
+            // Reset zoom to 100% if needed
+            if (window.visualViewport && window.visualViewport.scale !== 1) {
+                // Try to reset zoom programmatically
+                document.body.style.zoom = '1';
+                document.body.style.transform = 'scale(1)';
+            }
+        }
 
         // Enhanced animation trigger on scroll
         document.addEventListener('DOMContentLoaded', function() {
